@@ -16,7 +16,7 @@ const cookieParser = require("cookie-parser");
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://sadidukan-frontend.vercel.app'
+  'https://sadidukan-frontend.vercel.app/'
 ];
 
 app.use(cors({
