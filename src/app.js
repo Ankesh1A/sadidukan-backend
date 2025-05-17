@@ -1,4 +1,3 @@
-
 const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
@@ -13,10 +12,10 @@ const cors = require("cors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser"); 
 
-
+// ✅ FIX: Removed trailing slash
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://sadidukan-frontend.vercel.app/'
+  'https://sadidukan-frontend.vercel.app'
 ];
 
 app.use(cors({
@@ -30,20 +29,19 @@ app.use(cors({
   credentials: true,
 }));
 
-app.options('*', cors()); // Preflight support
+// ✅ Ensure preflight OPTIONS requests are handled
+app.options('*', cors());
 
-
+app.use(morgan("tiny"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
-app.use(cookieParser()); 
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(bodyParser.json());
-
 
 app.use("/user", userRoutes);
 app.use("/profile", profileRoutes);
 app.use("/contact", contactRoutes);
-app.use('/razorpay', razorpayRoutes);
-app.use('/api/auth', authRoutes);
-
+app.use("/razorpay", razorpayRoutes);
+app.use("/api/auth", authRoutes);
 
 module.exports = app;
