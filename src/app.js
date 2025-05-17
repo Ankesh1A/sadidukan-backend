@@ -16,7 +16,7 @@ const cookieParser = require("cookie-parser");
 app.use(morgan("tiny")); 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://aviyukt.vercel.app'
+  'https://sadidukan-frontend.vercel.app/'
 ];
 
 app.use(cors({
