@@ -7,17 +7,17 @@ const userRoutes = require("./routes/user.routes");
 const profileRoutes = require("./routes/profile.routes.js");
 const contactRoutes = require("./routes/contact.routes.js");
 const razorpayRoutes = require("./routes/payment.routes.js");
-const authRoutes = require('./routes/authRoutes');
+const authRoutes = require("./routes/authRoutes");
 
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const cors = require("cors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 
 // ✅ Allowed frontend origins (NO trailing slashes!)
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://sadi-five.vercel.app'
+  "http://localhost:5173",
+  "https://sadi-five.vercel.app"
 ];
 
 // ✅ Define CORS options
@@ -30,17 +30,23 @@ const corsOptions = {
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-// ✅ Apply CORS middleware BEFORE routes
+// ✅ Use CORS globally (should be at top before routes)
 app.use(cors(corsOptions));
 
-// ✅ Handle preflight OPTIONS for all routes
-app.options('*', cors(corsOptions));
+// ✅ Manual OPTIONS preflight handler (fixes issues with some hosts like Render)
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(204);
+});
 
-// ✅ Debugging: log incoming origins (optional)
+// ✅ Debug incoming origins
 app.use((req, res, next) => {
   console.log("Request Origin:", req.headers.origin);
   next();
@@ -60,5 +66,5 @@ app.use("/contact", contactRoutes);
 app.use("/razorpay", razorpayRoutes);
 app.use("/api/auth", authRoutes);
 
-// ✅ Export
+// ✅ Export app
 module.exports = app;
