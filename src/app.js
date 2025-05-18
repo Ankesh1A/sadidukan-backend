@@ -17,7 +17,7 @@ const cookieParser = require("cookie-parser");
 // ✅ Allowed frontend origins (NO trailing slashes!)
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://sadidukan-frontend.vercel.app'
+  'https://sadi-five.vercel.app'
 ];
 
 // ✅ Define CORS options
