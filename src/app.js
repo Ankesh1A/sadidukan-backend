@@ -22,7 +22,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://sadi-five.vercel.app",
-  "https://sadidukan-frontend.vercel.app/"
+  "https://sadidukan-frontend.vercel.app"
 ];
 
 const corsOptions = {
