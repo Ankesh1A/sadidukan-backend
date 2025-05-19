@@ -26,18 +26,11 @@ const allowedOrigins = [
 ];
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin:  "https://sadidukan-frontend.vercel.app",
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // 👈 Required for preflight
 
 
 // ✅ Handle OPTIONS (preflight) requests
