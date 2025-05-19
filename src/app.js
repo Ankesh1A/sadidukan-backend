@@ -9,41 +9,42 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 
-// Allowed origins for CORS
+// ✅ List of allowed frontend domains
 const allowedOrigins = [
   "http://localhost:5173",
   "https://sadi-five.vercel.app",
   "https://sadidukan-frontend.vercel.app"
 ];
 
-const corsOptions = {
+// ✅ CORS middleware
+app.use(cors({
   origin: function (origin, callback) {
+    // Allow requests with no origin (e.g., mobile apps or curl requests)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true
-};
+  credentials: true,
+}));
 
-// ✅ Apply CORS FIRST
-app.use(cors(corsOptions));
+// ✅ Preflight OPTIONS requests
+app.options("*", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(204);
+});
 
-// ✅ Preflight handling middleware
+
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   next();
 });
 
