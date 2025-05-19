@@ -15,6 +15,10 @@ const razorpayRoutes = require("./routes/payment.routes.js");
 const authRoutes = require('./routes/authRoutes');
 
 // ✅ Define CORS properly
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://sadi-five.vercel.app"
@@ -31,8 +35,9 @@ const corsOptions = {
   credentials: true,
 };
 
-// ✅ Apply CORS middleware FIRST
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // 👈 Required for preflight
+
 
 // ✅ Handle OPTIONS (preflight) requests
 app.use((req, res, next) => {
