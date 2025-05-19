@@ -1,3 +1,4 @@
+// Imports
 const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -8,17 +9,7 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 
-const userRoutes = require("./routes/user.routes");
-const profileRoutes = require("./routes/profile.routes.js");
-const contactRoutes = require("./routes/contact.routes.js");
-const razorpayRoutes = require("./routes/payment.routes.js");
-const authRoutes = require('./routes/authRoutes');
-
-// ✅ Define CORS properly
-const express = require('express');
-const cors = require('cors');
-const app = express();
-
+// Allowed origins for CORS
 const allowedOrigins = [
   "http://localhost:5173",
   "https://sadi-five.vercel.app",
@@ -26,16 +17,25 @@ const allowedOrigins = [
 ];
 
 const corsOptions = {
-  origin:  "https://sadidukan-frontend.vercel.app",
-  credentials: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 };
 
+// ✅ Apply CORS FIRST
 app.use(cors(corsOptions));
 
-
-// ✅ Handle OPTIONS (preflight) requests
+// ✅ Preflight handling middleware
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -47,19 +47,24 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Logger
+// Logger & Body Parsing
 app.use(morgan("tiny"));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Routes
+// Routes
+const userRoutes = require("./routes/user.routes");
+const profileRoutes = require("./routes/profile.routes.js");
+const contactRoutes = require("./routes/contact.routes.js");
+const razorpayRoutes = require("./routes/payment.routes.js");
+const authRoutes = require("./routes/authRoutes");
+
 app.use("/user", userRoutes);
 app.use("/profile", profileRoutes);
 app.use("/contact", contactRoutes);
 app.use("/razorpay", razorpayRoutes);
 app.use("/api/auth", authRoutes);
 
-// ✅ Export app
 module.exports = app;
