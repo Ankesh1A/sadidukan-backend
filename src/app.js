@@ -9,44 +9,42 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 
-// ✅ List of allowed frontend domains
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://sadi-five.vercel.app",
-  "https://sadidukan-frontend.vercel.app"
+  'http://localhost:5173',
+  'https://sadidukan-frontend.vercel.app',
+  'https://sadi-five.vercel.app'
 ];
 
-// ✅ CORS middleware
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (e.g., mobile apps or curl requests)
+    // Allow no origin (like Postman or curl)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error("CORS not allowed for this origin"));
     }
   },
-  credentials: true,
-}));
+  credentials: true
+};
 
-// ✅ Preflight OPTIONS requests
-app.options("*", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.sendStatus(204);
-});
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // handle preflight requests
 
-
+// Fallback CORS headers (for safety)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
-  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
   next();
 });
+
 
 // Logger & Body Parsing
 app.use(morgan("tiny"));
